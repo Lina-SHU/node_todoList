@@ -1,16 +1,10 @@
 const http = require('http');
 const { v4: uuidv4 } = require('uuid');
 const errHandle = require('./errorHandle');
+const headers = require('./headers');
 const todos = [];
 
 const requestListener = (req, res) => {
-    const headers = {
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Content-Length, X-Requested-With',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'PATCH, POST, GET,OPTIONS,DELETE',
-        'Content-Type': 'application/json'
-    };
-
     let body = '';
 
     req.on('data', (chunk) => {
@@ -28,7 +22,7 @@ const requestListener = (req, res) => {
         req.on('end', () => {
             try {
                 const title = JSON.parse(body).title;
-                if (title !== undefined) {
+                if (title) {
                     const todo = {
                         title,
                         id: uuidv4()
@@ -75,7 +69,7 @@ const requestListener = (req, res) => {
             try {
                 const todo = JSON.parse(body).title;
                 const id = req.url.split('/').pop();
-                const index = todos.findIndex((todo) => todo.id === id);
+                const index = todos.findIndex((item) => item.id === id);
                 if (todo !== undefined && index !== -1) {
                     todos[index].title = todo;
                     res.writeHead(200, headers);
